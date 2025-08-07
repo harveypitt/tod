@@ -6,4 +6,5 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "google-adk>=1.9.0",
+    "pydantic>=2.11.7",
 ]
