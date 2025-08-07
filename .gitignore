@@ -11,3 +11,6 @@ wheels/
 .env
 *.env
 *.env.*
+
+# Editor-specific files
+.ropeproject/
