@@ -46,11 +46,11 @@ class ToolSpecs(BaseModel):
 
 def upload_to_storage(file_path: str, filename: str) -> dict:
     """Upload file to Tigris storage on Fly.io.
-    
+
     Args:
         file_path (str): Local path to the file
         filename (str): Name for the file in storage
-        
+
     Returns:
         dict: Status and download URL or error message
     """
@@ -61,7 +61,7 @@ def upload_to_storage(file_path: str, filename: str) -> dict:
         secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
         bucket_name = os.getenv('BUCKET_NAME', 'tod-files')
         region = os.getenv('AWS_REGION', 'auto')
-        
+
         # Create S3 client configured for Tigris
         s3_client = boto3.client(
             's3',
@@ -70,28 +70,28 @@ def upload_to_storage(file_path: str, filename: str) -> dict:
             aws_secret_access_key=secret_key,
             region_name=region
         )
-        
+
         # Generate unique filename with timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         unique_filename = f"{timestamp}_{filename}"
-        
+
         # Upload file without ACL (Tigris might not support ACLs)
         s3_client.upload_file(file_path, bucket_name, unique_filename)
-        
+
         # Generate presigned URL for download (valid for 24 hours)
         download_url = s3_client.generate_presigned_url(
             'get_object',
             Params={'Bucket': bucket_name, 'Key': unique_filename},
             ExpiresIn=86400  # 24 hours
         )
-        
+
         return {
             "status": "success",
             "message": "File uploaded successfully",
             "download_url": download_url,
             "filename": unique_filename
         }
-        
+
     except NoCredentialsError:
         return {
             "status": "error",
@@ -107,7 +107,6 @@ def upload_to_storage(file_path: str, filename: str) -> dict:
             "status": "error",
             "error_message": f"Failed to upload file: {str(e)}"
         }
-
 
 def generate_unit_function(function_name: str, description: str) -> dict:
     """Generate a Python unit function and upload it to storage.
@@ -125,31 +124,8 @@ def generate_unit_function(function_name: str, description: str) -> dict:
         os.makedirs(temp_dir, exist_ok=True)
         file_path = os.path.join(temp_dir, f"{function_name}.py")
 
-        # Generate basic function template based on description
-        function_code = f'''"""Generated unit function: {function_name}
-Description: {description}
-"""
-
-def {function_name}():
-    """
-    {description}
-
-    Returns:
-        dict: Result with status and data or error message
-    """
-    # TODO: Implement function logic based on description
-    return {{
-        "status": "success",
-        "message": "Function {function_name} executed successfully",
-        "data": None
-    }}
-
-
-if __name__ == "__main__":
-    # Example usage
-    result = {function_name}()
-    print(result)
-'''
+        # Generate actual function code based on description
+        function_code = generate_function_code(function_name, description)
 
         # Write the function to file
         with open(file_path, 'w') as f:
@@ -157,13 +133,13 @@ if __name__ == "__main__":
 
         # Upload to storage
         upload_result = upload_to_storage(file_path, f"{function_name}.py")
-        
+
         # Clean up local file
         try:
             os.remove(file_path)
         except:
             pass  # Ignore cleanup errors
-            
+
         if upload_result["status"] == "success":
             return {
                 "status": "success",
