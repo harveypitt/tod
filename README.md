@@ -16,7 +16,7 @@
 **TOD - Tool On Demand**  
 *AI agents that make MCP servers*
 
-*Won a hackathon at Tessl*
+🏆 *Winner of [AI Native Dev](https://ainativedev.io/) Hackathon*
 
 </div>
 
@@ -34,6 +34,17 @@ Three-stage pipeline for generating MCP servers on demand. Built with Google ADK
 - Pipeline orchestrator to chain the three stages
 - Integration layer between agents
 - Automated deployment to hosting platforms
+
+## Why This Matters
+
+### Token Efficiency 🎯
+Instead of multiple back-and-forth conversations to build tools, TOD generates complete MCP servers in a single coordinated pipeline. No wasted tokens on repeated context or incremental refinements.
+
+### Autonomous Tool Building
+LLMs can extend their own capabilities without human intervention. Request a tool, get a working MCP server. No manual coding, configuration, or deployment steps.
+
+### Production Ready Output
+Generated servers include proper error handling, input validation, security controls, and monitoring. Not just proof-of-concept code, but deployment-ready implementations.
 
 ## 🚀 Quick Start
 
