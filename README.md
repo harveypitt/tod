@@ -46,6 +46,10 @@ LLMs can extend their own capabilities without human intervention. Request a too
 ### Production Ready Output
 Generated servers include proper error handling, input validation, security controls, and monitoring. Not just proof-of-concept code, but deployment-ready implementations.
 
+## The Vision
+
+Today, TOD demonstrates three specialized agents that can generate MCP servers from natural language requests. Tomorrow, it enables a future where AI systems continuously extend their own capabilities—requesting, building, and deploying new tools as they encounter novel problems, sharing these capabilities across a network of interconnected agents, and ultimately evolving into truly autonomous systems that grow smarter through experience rather than just training data.
+
 ## 🚀 Quick Start
 
 ### 1. Setup Environment
