@@ -9,4 +9,5 @@ dependencies = [
     "pydantic>=2.11.7",
     "boto3>=1.35.0",
     "requests>=2.32.0",
+    "aci-sdk>=1.0.0b3",
 ]
