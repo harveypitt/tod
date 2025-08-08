@@ -9,5 +9,5 @@ root_agent = Agent(
     name="spec_writer",
     instruction=agent_instruction,
     planner=PlanReActPlanner(),
-    tools=[mcp_toolset],
+    tools=[mcp_toolset]
 )
