@@ -1499,6 +1499,7 @@ dependencies = [
     { name = "aci-sdk" },
     { name = "boto3" },
     { name = "google-adk" },
+    { name = "google-genai" },
     { name = "pydantic" },
     { name = "requests" },
 ]
@@ -1508,6 +1509,7 @@ requires-dist = [
     { name = "aci-sdk", specifier = ">=1.0.0b3" },
     { name = "boto3", specifier = ">=1.35.0" },
     { name = "google-adk", specifier = ">=1.9.0" },
+    { name = "google-genai", specifier = ">=1.29.0" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "requests", specifier = ">=2.32.0" },
 ]

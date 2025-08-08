@@ -1,11 +1,13 @@
-from google.adk.agents import Agent
+from google.adk import Agent
+from google.adk.planners import PlanReActPlanner
 
 from .prompt import agent_instruction
-from .tools.tools import mcp_tools
+from .tools.tools import mcp_toolset
 
 root_agent = Agent(
     model="gemini-2.5-flash",
-    name="software_assistant",
+    name="spec_writer",
     instruction=agent_instruction,
-    tools=[mcp_tools],
+    planner=PlanReActPlanner(),
+    tools=[mcp_toolset],
 )

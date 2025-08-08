@@ -10,4 +10,5 @@ dependencies = [
     "boto3>=1.35.0",
     "requests>=2.32.0",
     "aci-sdk>=1.0.0b3",
+    "google-genai>=1.29.0",
 ]
