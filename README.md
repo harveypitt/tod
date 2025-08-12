@@ -279,4 +279,4 @@ SOFTWARE.
 
 ---
 
-*Built during a hackathon by the teams: Sunny (Request Processing), Harvey & James (Function Generation), and Shahel (MCP Integration)*
+*Built during a hackathon by the teams: Sunny (Request Processing), Harvey & James (Function Generation), Shahel and Osman (MCP Integration) and Sachin (Product Management)*
