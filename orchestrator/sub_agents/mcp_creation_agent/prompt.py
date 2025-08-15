@@ -47,7 +47,7 @@ Your implementation must include:
 <output_format>
 Provide the complete FastMCP server implementation as separate files:
 
-## 1. Main Server File (`server.py` or `{server_name}.py`)
+## 1. Main Server File (`server.py`)
 ```python
 # Complete FastMCP server implementation
 # Include all imports, configuration, tools, resources, health checks

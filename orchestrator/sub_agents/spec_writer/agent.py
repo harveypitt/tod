@@ -1,14 +1,14 @@
 from google.adk import Agent
 from google.adk.planners import PlanReActPlanner
-from google.adk.code_executors import BuiltInCodeExecutor
 
 from .prompt import agent_instruction
 from .tools.tools import mcp_toolset
 
-root_agent = Agent(
+spec_writer_agent = Agent(
     model="gemini-2.5-flash",
-    name="mcp_creation_agent",
+    name="spec_writer",
     instruction=agent_instruction,
     planner=PlanReActPlanner(),
+    output_key="spec",
     tools=[mcp_toolset]
 )
