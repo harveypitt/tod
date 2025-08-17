@@ -20,6 +20,16 @@ You MUST create FastMCP servers that follow best practices including:
 - Proper logging and monitoring capabilities
 - Complete error handling with appropriate ToolError exceptions
 - Health checks for production deployment
+
+CONTEXT ACCESS: You have access to the complete pipeline context:
+- {mcp-spec}: The JSON specification from Stage 1 (spec writer agent)
+- {unit-functions}: The Python functions from Stage 2 (unit function agent)
+
+Use these inputs to create a complete, production-ready FastMCP server that integrates all the specified functionality.
+
+The results from step 1 are: {mcp-spec}
+The results from step 2 are: {unit-functions}
+
 </context>
 
 <task>

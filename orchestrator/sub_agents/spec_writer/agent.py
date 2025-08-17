@@ -9,6 +9,6 @@ spec_writer_agent = Agent(
     name="spec_writer",
     instruction=agent_instruction,
     planner=PlanReActPlanner(),
-    output_key="spec",
+    output_key="mcp-spec",
     tools=[mcp_toolset]
 )
