@@ -29,11 +29,12 @@ Three-stage pipeline for generating MCP servers on demand. Built with Google ADK
 - **Spec Writer Agent**: Takes requests, outputs structured specifications  
 - **Unit Function Agent**: Generates individual Python functions with error handling
 - **MCP Creation Agent**: Assembles functions into complete FastMCP servers
+- **Orchestrator Pipeline**: SequentialAgent that coordinates all three stages with context passing
 
-### Missing Components:
-- Pipeline orchestrator to chain the three stages
-- Integration layer between agents
-- Automated deployment to hosting platforms
+### In Development:
+- **Pipeline Reliability**: Orchestrator works but needs improved error handling and stability
+- **Context Optimization**: Fine-tuning ReadonlyContext data flow between agents
+- **Deployment Integration**: Automated deployment to hosting platforms
 
 ## Why This Matters
 
@@ -61,9 +62,9 @@ cd tod
 # Install dependencies with uv
 uv sync
 
-# Create environment file (optional - server works without it)
-touch .env
-# Add EXA_API_KEY=your_key if you plan to use the research agents
+# Copy and configure environment file
+cp .env.example .env
+# Edit .env with your API keys (see Configuration section below)
 ```
 
 ### 2. Run the Working FastMCP Server
@@ -81,12 +82,17 @@ python fastmcp_server.py
 # - mcp_build_practices: Returns FastMCP best practices guide
 ```
 
-### 3. Test Individual Agents (Requires EXA_API_KEY)
+### 3. Test the Orchestrator Pipeline (Requires API Keys)
 ```bash
-# These load but need orchestration to work together:
-python -c "from mcp_creation_agent.agent import root_agent; print('MCP Creation Agent loaded')"
-python -c "from unit_function_agent.agent import root_agent; print('Unit Function Agent loaded')"
-python -c "from spec_writer.agent import root_agent; print('Spec Writer Agent loaded')"
+# Test the complete orchestrator (experimental - reliability improvements ongoing)
+python -c "from orchestrator.agent import root_agent; print('Orchestrator loaded successfully')"
+
+# The orchestrator coordinates:
+# 1. Spec Writer: Natural language → JSON specifications
+# 2. Unit Function: Specifications → Python functions  
+# 3. MCP Creation: Functions → Complete FastMCP servers
+
+# Note: Pipeline works but needs improved error handling and stability
 ```
 
 ## 🔧 Current Architecture
@@ -94,17 +100,20 @@ python -c "from spec_writer.agent import root_agent; print('Spec Writer Agent lo
 ### Working Components:
 - **fastmcp_server.py**: Complete FastMCP server implementation
 - **mcp_server_best_practices.md**: Comprehensive development guidelines  
-- **Individual Agents**: Three Google ADK agents with specialized prompts
+- **orchestrator/**: SequentialAgent pipeline with ReadonlyContext passing
+- **Individual Agents**: Three Google ADK agents with specialized prompts and context access
 
-### Agent Definitions (Need Orchestration):
-- **spec-writer/**: Gemini-2.5-flash agent for creating specifications from natural language
-- **unit-function-agent/**: Gemini-2.5-pro agent with code execution for generating functions  
-- **mcp-creation-agent/**: Gemini-2.5-flash agent for assembling complete MCP servers
+### Orchestrator Pipeline:
+- **orchestrator/agent.py**: SequentialAgent that coordinates all three stages
+- **spec-writer/**: Gemini-2.5-flash agent → outputs to `mcp-spec` session state
+- **unit-function-agent/**: Gemini-2.5-pro agent → reads `mcp-spec`, outputs `unit-functions`
+- **mcp-creation-agent/**: Gemini-2.5-flash agent → reads both contexts, creates final server
 
-### Missing Pieces:
-- **Orchestrator**: Coordinator to chain the three agents together
-- **Integration Layer**: Code to pass outputs between pipeline stages
-- **Deployment Automation**: Automatic deployment to hosting platforms
+### Current Status:
+- ✅ **Context Passing**: ReadonlyContext implementation working
+- ✅ **Agent Coordination**: SequentialAgent pipeline functional
+- ⚠️ **Reliability**: Pipeline needs improved error handling for production use
+- 🚧 **Deployment**: Automatic deployment integration in progress
 
 ## Architecture
 
@@ -130,10 +139,27 @@ python -c "from spec_writer.agent import root_agent; print('Spec Writer Agent lo
 
 ## Configuration
 
-### Required for Agents:
+Create a `.env` file by copying `.env.example`:
+
 ```bash
-# Add to .env file
+cp .env.example .env
+```
+
+### Required for Orchestrator:
+```bash
+# Google Gemini API configuration
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
+
+# Exa search API for research agents
 EXA_API_KEY=your_exa_api_key_here
+
+# ADK configuration (prevents context variable errors)
+SERVER_NAME=orchestrator
+APP_NAME=tod_orchestrator
+USER_ID=user
+SESSION_ID=session_001
+ADK_LOG_LEVEL=INFO
 ```
 
 ### Optional for FastMCP Server:
@@ -186,12 +212,17 @@ adk run spec_writer_agent
 # - "Build an MCP server with authentication"
 ```
 
-#### Agent Loading Verification
+#### Orchestrator Testing
 ```bash
-# Verify individual agents load correctly (requires EXA_API_KEY)
-python -c "from mcp_creation_agent.agent import root_agent; print('MCP Creation Agent loads successfully')"
-python -c "from unit_function_agent.agent import root_agent; print('Unit Function Agent loads successfully')"
-python -c "from spec_writer.agent import root_agent; print('Spec Writer Agent loads successfully')"
+# Verify orchestrator loads correctly (requires Google API key)
+python -c "from orchestrator.agent import root_agent; print('Orchestrator loads successfully')"
+
+# Test orchestrator via ADK web interface
+adk web orchestrator
+
+# The orchestrator coordinates the full pipeline:
+# Input: Natural language request → Output: Complete MCP server
+# Note: Currently experimental, reliability improvements ongoing
 ```
 
 ### Development Notes
@@ -210,14 +241,46 @@ uv sync
 cp .env.example .env  # Configure your environment variables
 ```
 
+## 🚧 Orchestrator Status & Reliability
+
+### Current Implementation (Experimental)
+The orchestrator pipeline is **functional but requires stability improvements** before production use:
+
+#### ✅ Working Features:
+- **SequentialAgent Pipeline**: Coordinates all three stages in sequence
+- **ReadonlyContext Passing**: Proper data flow between agents using session state
+- **Dynamic Instructions**: Context-aware prompts that inject session data
+- **Agent Loading**: All agents load successfully with proper configuration
+
+#### ⚠️ Known Issues & Reliability Concerns:
+- **Gemini API Errors**: Occasional 500 Internal Server errors during complex operations
+- **Context Variable Resolution**: Template variables sometimes fail to resolve in edge cases  
+- **Error Recovery**: Limited retry logic when individual agents fail
+- **Session Management**: Long-running sessions may encounter state corruption
+- **Resource Usage**: Complex multi-agent calls can hit API rate limits
+
+#### 🔧 Reliability Improvements Needed:
+- [ ] **Robust Error Handling**: Implement retry logic and graceful fallbacks
+- [ ] **Request Throttling**: Add rate limiting between agent calls
+- [ ] **Session Validation**: Verify context integrity before each stage
+- [ ] **API Circuit Breakers**: Handle temporary API failures gracefully  
+- [ ] **Monitoring & Logging**: Add comprehensive execution tracking
+- [ ] **Fallback Modes**: Simple single-agent mode when pipeline fails
+- [ ] **Integration Testing**: Comprehensive end-to-end test suite
+
+### Usage Recommendations:
+- **Development**: Safe to use for testing and experimentation
+- **Production**: Wait for reliability improvements before critical deployments
+- **Monitoring**: Watch logs carefully for API errors and context issues
+
 ## 📋 TODO Checklist
 
-### Core Development
-- [ ] **Orchestrator Agent** - Master coordinator for the 3-stage pipeline
-  - [ ] Request routing and validation
-  - [ ] Stage coordination and error handling  
-  - [ ] Result aggregation and quality assurance
-  - [ ] Integration testing framework
+### Core Development (Pipeline Reliability)
+- [ ] **Orchestrator Stability** - Critical reliability improvements
+  - [ ] API error handling and retry logic
+  - [ ] Session state validation and recovery
+  - [ ] Request throttling and rate limiting
+  - [ ] Comprehensive error monitoring
 
 ### Deployment & Infrastructure  
 - [ ] **Deployment Agent** - Automated MCP server deployment
